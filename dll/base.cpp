@@ -16,6 +16,8 @@
    <http://www.gnu.org/licenses/>.  */
 
 #include "base.h"
+#include <cstddef>
+#include <unistd.h>
 
 #ifdef __WINDOWS__
 
@@ -200,6 +202,26 @@ std::string get_lib_path() {
   }
 
   return ".";
+}
+#elifdef __APPLE__
+std::string get_lib_path()
+{
+    Dl_info info;
+    dladdr((void*)&get_lib_path, &info);
+    return info.dli_fname;
+}
+
+char* get_current_dir_name()
+{
+    return getcwd(0, 0);
+}
+
+char* canonicalize_file_name(const char* path)
+{
+    char resolved_path[PATH_MAX];
+    char* canonical_path = NULL;
+    realpath(path, resolved_path);
+    return canonical_path;
 }
 #endif
 

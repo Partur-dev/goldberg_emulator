@@ -28,6 +28,22 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+# Get protobuf on macos
+if (APPLE)
+	include(FetchContent)
+
+	set(CMAKE_OSX_ARCHITECTURES "arm64;x86_64")
+	set(protobuf_BUILD_TESTS CACHE BOOL OFF FORCE)
+	set(FetchContent_Quiet CACHE BOOL OFF FORCE)
+
+	FetchContent_Declare(Protobuf
+			PREFIX protobuf
+			GIT_REPOSITORY https://github.com/protocolbuffers/protobuf
+			GIT_TAG v24.3
+			GIT_SHALLOW ON
+			OVERRIDE_FIND_PACKAGE)
+endif()
+
 # Find the protobuf compiler and libraries
 include(FindProtobuf)
 find_package(Protobuf 3.1.0 REQUIRED)
@@ -57,7 +73,7 @@ if(WIN32)
 	  set(BIN_LOBBY_CONNECT lobby_connect)
 	  set(BIN_GENERATE_INTERFACES_FILE generate_interfaces_file)
   endif()
-elseif(UNIX AND NOT APPLE)
+elseif(UNIX)
   set(LIB_STEAM_API steam_api)
 	set(LIB_STEAMCLIENT steamclient)
 	set(LIB_STEAMNETWORKINGSOCKETS steamnetworkingsockets)
